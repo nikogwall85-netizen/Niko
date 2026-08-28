@@ -1,268 +1,490 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Niko</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Niko 🐾</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-        }
+<style>
+*{box-sizing:border-box}
 
-        body {
-            margin: 0;
-            min-height: 100vh;
-            background: #050505;
-            color: white;
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-        }
+body{
+ margin:0;
+ background:#050507;
+ color:#fff;
+ font-family:Arial,sans-serif;
+ min-height:100vh;
+}
 
-        .app {
-            width: 100%;
-            max-width: 500px;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            padding: 18px;
-        }
+.app{
+ width:100%;
+ max-width:1050px;
+ margin:auto;
+ padding:18px;
+ display:grid;
+ grid-template-columns:1fr 350px;
+ gap:18px;
+}
 
-        .top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
+.main,.side{
+ border:1px solid #ff5fa2;
+ border-radius:28px;
+ background:linear-gradient(145deg,#09090d,#111016);
+ box-shadow:0 0 25px rgba(255,80,160,.08);
+ overflow:hidden;
+}
 
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            color: #ff7a00;
-        }
+header{
+ padding:18px 25px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+}
 
-        .status {
-            font-size: 13px;
-            color: #8cff9b;
-        }
+.logo{
+ color:#ff72b4;
+ font-size:42px;
+ font-weight:bold;
+ text-shadow:0 0 15px #ff3f99;
+}
 
-        .niko {
-            text-align: center;
-            margin-top: 35px;
-        }
+.subtitle{
+ text-align:center;
+ color:#ddd;
+ margin-top:-10px;
+}
 
-        .cat {
-            font-size: 85px;
-            filter: drop-shadow(0 0 18px #ff7a00);
-        }
+.menu{
+ font-size:30px;
+ color:#ff72b4;
+}
 
-        .face {
-            margin: 8px auto;
-            width: 210px;
-            padding: 18px;
-            border: 2px solid #ff7a00;
-            border-radius: 35px;
-            background: #111;
-            box-shadow: 0 0 25px rgba(255,122,0,.25);
-        }
+.lock{
+ font-size:25px;
+ color:#ff72b4;
+}
 
-        .eyes {
-            font-size: 32px;
-            letter-spacing: 35px;
-            margin-right: -35px;
-        }
+.robot{
+ text-align:center;
+ padding:15px;
+}
 
-        .mouth {
-            font-size: 25px;
-            margin-top: 10px;
-        }
+.cat{
+ font-size:130px;
+ filter:drop-shadow(0 0 30px #ff4da0);
+ animation:float 3s ease-in-out infinite;
+}
 
-        .hello {
-            color: #ddd;
-            margin-top: 15px;
-        }
+@keyframes float{
+ 50%{transform:translateY(-7px)}
+}
 
-        .chat {
-            flex: 1;
-            margin-top: 25px;
-            padding: 15px;
-            background: #0d0d0d;
-            border-radius: 20px;
-            min-height: 180px;
-        }
+.greeting{
+ display:inline-block;
+ padding:15px 22px;
+ border:1px solid #ff5fa2;
+ border-radius:22px;
+ color:#ffb2d3;
+ margin:8px;
+}
 
-        .message {
-            background: #181818;
-            border-radius: 15px;
-            padding: 12px;
-            margin-bottom: 10px;
-        }
+.chat{
+ height:390px;
+ margin:10px 25px;
+ padding:15px;
+ border:1px solid #27232a;
+ border-radius:25px;
+ overflow-y:auto;
+ background:#08080b;
+}
 
-        .input-area {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-        }
+.msg{
+ max-width:85%;
+ padding:14px 17px;
+ margin:12px 0;
+ border-radius:18px;
+ line-height:1.7;
+}
 
-        input {
-            flex: 
-1;
-            padding: 14px;
-            border: 1px solid #333;
-            border-radius: 15px;
-            background: #181818;
-            color: white;
-            outline: none;
-            font-size: 16px;
-        }
+.niko-msg{
+ background:#18171d;
+ border:1px solid #39343d;
+ margin-left:auto;
+}
 
-        button {
-            border: 0;
-            border-radius: 15px;
-            padding: 12px 18px;
-            background: #ff7a00;
-            color: white;
-            font-weight: bold;
-            font-size: 16px;
-        }
+.user-msg{
+ background:#241322;
+ border:1px solid #ff5fa2;
+ color:#ffd4e7;
+ margin-right:auto;
+}
 
-        button:active {
-            transform: scale(.97);
-        }
-    </style>
+.input{
+ display:flex;
+ gap:8px;
+ padding:15px 25px 25px;
+}
+
+input{
+ flex:1;
+ background:#0b0b0e;
+ border:1px solid #444;
+ border-radius:18px;
+ padding:15px;
+ color:#fff;
+ font-size:16px;
+ outline:none;
+}
+
+input:focus{
+ border-color:#ff5fa2;
+ box-shadow:0 0 12px rgba(255,80,160,.2);
+}
+
+button{
+ border:1px solid #ff5fa2;
+ background:#130b11;
+ color:#ff91c2;
+ border-radius:18px;
+ padding:12px 18px;
+ font-size:15px;
+ cursor:pointer;
+}
+
+button:hover{
+ background:#ff4f9e;
+ color:#fff;
+}
+
+.send{
+ background:#ff4f9e;
+ color:#fff;
+ font-weight:bold;
+}
+
+.voice{
+ display:flex;
+ justify-content:center;
+ padding-bottom:18px;
+}
+
+.voice button{
+ width:75px;
+ height:75px;
+ border-radius:50%;
+ font-size:30px;
+ background:#ff4f9e;
+ color:#fff;
+ box-shadow:0 0 25px rgba(255,70,160,.45);
+}
+
+.tools{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:10px;
+ padding:15px 25px 25px;
+}
+
+.tool{
+ padding:15px 8px;
+ text-align:center;
+}
+
+.tool span{
+ display:block;
+ font-size:25px;
+ margin-bottom:6px;
+}
+
+.side{
+ padding:20px;
+}
+
+.side h2{
+ color:#ff72b4;
+ text-align:center;
+ margin-top:5px;
+}
+
+.feature{
+ padding:13px 5px;
+ border-bottom:1px solid #29242b;
+}
+
+.feature b{
+ color:#ff91c2;
+ font-size:16px;
+}
+
+.feature p{
+ margin:5px 0 0;
+ color:#ddd;
+ font-size:14px;
+}
+
+.quick{
+ margin-top:20px;
+}
+
+.quick-grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:9px;
+}
+
+.quick button{
+ min-height:55px;
+}
+
+.security{
+ margin-top:20px;
+ border:1px solid #ff5fa2;
+ border-radius:20px;
+ padding:18px;
+ text-align:center;
+}
+
+.security-icon{
+ font-size:55px;
+ color:#ff72b4;
+}
+
+.bottom{
+ grid-column:1 / -1;
+ display:flex;
+ justify-content:space-around;
+ border:1px solid #ff5fa2;
+ border-radius:22px;
+ padding:10px;
+ background:#09090d;
+}
+
+.bottom button{
+ border:0;
+ background:transparent;
+}
+
+.bottom span{
+ display:block;
+ font-size:22px;
+}
+
+@media(max-width:800px){
+ .app{
+  grid-template-columns:1fr;
+ }
+ .side{
+  order:2;
+ }
+ .bottom{
+  grid-column:auto;
+ }
+}
+
+@media(min-width:801px){
+ .main{min-height:850px}
+}
+</style>
 </head>
 
 <body>
-    <div class="app">
-        <div class="top">
-            <div class="logo">Niko</div>
-            <div class="status">● متصل</div>
-        </div>
 
-        <div class="niko">
-            <div class="cat">🐱</div>
-            <div class="face">
-                <div class="eyes">●　●</div>
-                <div class="mouth">⌣</div>
-            </div>
-            <div class="hello">مرحباً! أنا نيكو 🤖🐱</div>
-        </div>
+<div class="app">
 
-        <div class="chat" id="chat">
-            <div class="message">أهلاً ديم! وش تبين نسوي اليوم؟ ✨</div>
-        </div>
+<section class="main">
 
-        <div class="input-area">
-            <input id="message" placeholder="اكتبي رسالتك..." />
-            <button onclick="sendMessage()">إرسال</button>
-        </div>
-    </div>
+<header>
+<div class="menu">☰</div>
+<div>
+<div class="logo">🐾 Niko 🐾</div>
+<div class="subtitle">مساعدتك الذكية</div>
+</div>
+<div class="lock">🔐</div>
+</header>
 
-    <script>
-        function sendMessage() {
-            const input = document.getElementById("message");
-            const chat = document.getElementById("chat");
-            const text = input.value.trim();
+<div class="robot">
+<div class="cat">🐱</div>
+<div class="greeting">
+مرحباً ديم! 👋<br>
+كيف أقدر أساعدك اليوم؟
+</div>
+</div>
 
-            if (!text) return;
+<div class="chat" id="chat">
+<div class="msg niko-msg">
+أهلاً ديم! ✨ أنا نيكو 🐱<br>
+جاهز أساعدك!
+</div>
+</div>
 
-            const user = document.createElement("div");
-            user.className = "message";
-            user.textContent = "أنت: " + text;
-            chat.appendChild(user);
+<div class="input">
+<input id="message" placeholder="اكتبي رسالتك..." autocomplete="off">
+<button class="send" onclick="sendMessage()">إرسال</button>
+</div>
 
-            const niko = document.createElement("div");
-            niko.className = "message";
-            niko.textContent = "نيكو: وصلتني رسالتك! 🐱✨";
-            chat.appendChild(niko);
+<div class="voice">
+<button onclick="voice()">🎙️</button>
+</div>
 
-            input.value = "";
-            chat.scrollTop = chat.scrollHeight;
-        }
+<div class="tools">
+<button class="tool" onclick="ocr()"><span>🖼️</span>OCR</button>
+<button class="tool" onclick="speakLast()"><span>🔊</span>صوت</button>
+<button class="tool" onclick="calculator()"><span>🧮</span>حاسبة</button>
+<button class="tool" onclick="reminder()"><span>🔔</span>تذكير</button>
+</div>
 
-        document.getElementById("message").addEventListener("keydown", function(e) {
-            if (e.key === "Enter") sendMessage();
-        });
-    </script>
-</body>
-</html>
-1;
-            padding: 14px;
-            border: 1px solid #333;
-            border-radius: 15px;
-            background: #181818;
-            color: white;
-            outline: none;
-            font-size: 16px;
-        }
+</section>
 
-        button {
-            border: 0;
-            border-radius: 15px;
-            padding: 12px 18px;
-            background: #ff7a00;
-            color: white;
-            font-weight: bold;
-            font-size: 16px;
-        }
+<aside class="side">
 
-        button:active {
-            transform: scale(.97);
-        }
-    </style>
-</head>
+<h2>🐾 مميزات نيكو</h2>
 
-<body>
-    <div class="app">
-        <div class="top">
-            <div class="logo">Niko</div>
-            <div class="status">● متصل</div>
-        </div>
+<div class="feature">
+<b>💬 محادثة نصية وصوتية</b>
+<p>تحدثي مع نيكو نصاً أو صوتاً</p>
+</div>
 
-        <div class="niko">
-            <div class="cat">🐱</div>
-            <div class="face">
-                <div class="eyes">●　●</div>
-                <div class="mouth">⌣</div>
-            </div>
-            <div class="hello">مرحباً! أنا نيكو 🤖🐱</div>
-        </div>
+<div class="feature">
+<b>🧠 ذاكرة ذكية</b>
+<p>ذاكرة للمحادثات والمعلومات المهمة</p>
+</div>
 
-        <div class="chat" id="chat">
-            <div class="message">أهلاً ديم! وش تبين نسوي اليوم؟ ✨</div>
-        </div>
+<div class="feature">
+<b>🔐 خصوصية وأمان</b>
+<p>تأكيد قبل العمليات الحساسة</p>
+</div>
 
-        <div class="input-area">
-            <input id="message" placeholder="اكتبي رسالتك..." />
-            <button onclick="sendMessage()">إرسال</button>
-        </div>
-    </div>
+<div class="feature">
+<b>📱 فتح التطبيقات</b>
+<p>يطلب الإذن قبل تنفيذ العملية</p>
+</div>
 
-    <script>
-        function sendMessage() {
-            const input = document.getElementById("message");
-            const chat = document.getElementById("chat");
-            const text = input.value.trim();
+<div class="feature">
+<b>🔎 بحث ذكي</b>
+<p>البحث عن المعلومات بسرعة</p>
+</div>
 
-            if (!text) return;
+<div class="feature">
+<b>🖼️ قراءة النصوص من الصور</b>
+<p>استخراج النص باستخدام OCR</p>
+</div>
 
-            const user = document.createElement("div");
-            user.className = "message";
-            user.textContent = "أنت: " + text;
-            chat.appendChild(user);
+<div class="feature">
+<b>⏰ مؤقتات وتذكيرات</b>
+<p>تنظيم المهام والتنبيهات</p>
+</div>
 
-            const niko = document.createElement("div");
-            niko.className = "message";
-            niko.textContent = "نيكو: وصلتني رسالتك! 🐱✨";
-            chat.appendChild(niko);
+<div class="feature">
+<b>🧮 حاسبة وتحويل وحدات</b>
+<p>عمليات حسابية وتحويلات</p>
+</div>
 
-            input.value = "";
-            chat.scrollTop = chat.scrollHeight;
-        }
+<div class="feature">
+<b>🌤️ الطقس والمعلومات</b>
+<p>سيتم ربطها لاحقاً</p>
+</div>
 
-        document.getElementById("message").addEventListener("keydown", function(e) {
-            if (e.key === "Enter") sendMessage();
-        });
-    </script>
+<div class="quick">
+<h2>⚡ أوامر سريعة</h2>
+
+<div class="quick-grid">
+<button onclick="quick('ابحث في جوجل')">🔎 ابحث في جوجل</button>
+<button onclick="quick('افتح يوتيوب')">▶️ افتح يوتيوب</button>
+<button onclick="calculator()">🧮 آلة حاسبة</button>
+<button onclick="quick('ما هو الطقس؟')">🌤️ الطقس الآن</button>
+<button onclick="reminder()">⏱️ مؤقت</button>
+<button onclick="reminder()">🔔 تذكير</button>
+<button onclick="quick('ترجم')">🌐 ترجمة</button>
+<button onclick="quick('حوّل وحدات')">↔️ تحويل وحدات</button>
+</div>
+</div>
+
+<div class="security">
+<div class="security-icon">🔐</div>
+<h3>حماية خصوصيتك</h3>
+<p>نيكو يطلب التأكيد قبل العمليات الحساسة.</p>
+</div>
+
+</aside>
+
+<div class="bottom">
+<button>🧠<span>الذكريات</span></button>
+<button>🔔<span>التذكيرات</span></button>
+<button>🏠<span>الرئيسية</span></button>
+<button>▦<span>الأدوات</span></button>
+<button>⚙️<span>الإعدادات</span></button>
+</div>
+
+</div>
+
+<script>
+
+function addMessage(text,type){
+ const chat=document.getElementById("chat");
+ const div=document.createElement("div");
+ div.className="msg "+type;
+ div.textContent=text;
+ chat.appendChild(div);
+ chat.scrollTop=chat.scrollHeight;
+}
+
+function sendMessage(){
+ const input=document.getElementById("message");
+ const text=input.value.trim();
+
+ if(!text)return;
+
+ addMessage("أنت: "+text,"user-msg");
+ input.value="";
+
+ setTimeout(()=>{
+  addMessage("نيكو: وصلتني رسالتك 🐱✨","niko-msg");
+ },400);
+}
+
+function quick(text){
+ document.getElementById("message").value=text;
+ sendMessage();
+}
+
+function voice(){
+ if("speechSynthesis" in window){
+  const u=new SpeechSynthesisUtterance("مرحباً ديم، أنا نيكو");
+  u.lang="ar-SA";
+  speechSynthesis.speak(u);
+ }
+ addMessage("نيكو: تم تشغيل الصوت 🎙️","niko-msg");
+}
+
+function speakLast(){
+ voice();
+}
+
+function calculator(){
+ const value=prompt("اكتبي العملية الحسابية:");
+ if(value){
+  try{
+   const result=Function("return "+value)();
+   addMessage("نيكو: الناتج = "+result+" 🧮","niko-msg");
+  }catch{
+   addMessage("نيكو: العملية غير صحيحة.","niko-msg");
+  }
+ }
+}
+
+function reminder(){
+ alert("ميزة التذكيرات سنربطها لاحقاً ⏰");
+}
+
+function ocr(){
+ alert("ميزة OCR موجودة في مشروع نيكو وسنربطها بالواجهة في الخطوة القادمة 🖼️");
+}
+
+document.getElementById("message").addEventListener("keydown",function(e){
+ if(e.key==="Enter")sendMessage();
+});
+
+</script>
+
 </body>
 </html>
