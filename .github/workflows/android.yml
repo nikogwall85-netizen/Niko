@@ -15,6 +15,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: إعداد Java
+      - name: إعداد Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: تثبيت Android SDK tools
+        run: sdkmanager "platform-tools" "build-tools;35.0.0" "platforms;android-35"
         uses: actions/setup-java@v4
         with:
           distribution: temurin
