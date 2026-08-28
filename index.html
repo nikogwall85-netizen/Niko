@@ -106,3 +106,83 @@
 
         input {
             flex: 
+1;
+            padding: 14px;
+            border: 1px solid #333;
+            border-radius: 15px;
+            background: #181818;
+            color: white;
+            outline: none;
+            font-size: 16px;
+        }
+
+        button {
+            border: 0;
+            border-radius: 15px;
+            padding: 12px 18px;
+            background: #ff7a00;
+            color: white;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        button:active {
+            transform: scale(.97);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <div class="top">
+            <div class="logo">Niko</div>
+            <div class="status">● متصل</div>
+        </div>
+
+        <div class="niko">
+            <div class="cat">🐱</div>
+            <div class="face">
+                <div class="eyes">●　●</div>
+                <div class="mouth">⌣</div>
+            </div>
+            <div class="hello">مرحباً! أنا نيكو 🤖🐱</div>
+        </div>
+
+        <div class="chat" id="chat">
+            <div class="message">أهلاً ديم! وش تبين نسوي اليوم؟ ✨</div>
+        </div>
+
+        <div class="input-area">
+            <input id="message" placeholder="اكتبي رسالتك..." />
+            <button onclick="sendMessage()">إرسال</button>
+        </div>
+    </div>
+
+    <script>
+        function sendMessage() {
+            const input = document.getElementById("message");
+            const chat = document.getElementById("chat");
+            const text = input.value.trim();
+
+            if (!text) return;
+
+            const user = document.createElement("div");
+            user.className = "message";
+            user.textContent = "أنت: " + text;
+            chat.appendChild(user);
+
+            const niko = document.createElement("div");
+            niko.className = "message";
+            niko.textContent = "نيكو: وصلتني رسالتك! 🐱✨";
+            chat.appendChild(niko);
+
+            input.value = "";
+            chat.scrollTop = chat.scrollHeight;
+        }
+
+        document.getElementById("message").addEventListener("keydown", function(e) {
+            if (e.key === "Enter") sendMessage();
+        });
+    </script>
+</body>
+</html>
