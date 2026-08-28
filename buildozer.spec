@@ -2,6 +2,7 @@
 title = Niko
 package.name = niko
 package.domain = org.niko
+version = 1.0
 source.dir = .
 source.include_exts = py,png,jpg,jpeg,kv,atlas
 requirements = python3,kivy
