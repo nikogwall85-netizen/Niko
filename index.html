@@ -478,13 +478,33 @@ document.getElementById("message").addEventListener("keydown",function(e){
 let listening = false;
 
 function speakNiko(text) {
-    if ("speechSynthesis" in window) {
-        speechSynthesis.cancel();
+    if (!("speechSynthesis" in window)) {
+        return;
+    }
+
+    speechSynthesis.cancel();
+
+    const speak = () => {
         const u = new SpeechSynthesisUtterance(text);
         u.lang = "ar-SA";
-        u.rate = 0.95;
-        u.pitch = 1;
+        u.rate = 0.9;
+        u.pitch = 1.05;
+        u.volume = 1;
+
+        const voices = speechSynthesis.getVoices();
+        const arabic = voices.find(v => v.lang && v.lang.toLowerCase().startsWith("ar"));
+
+        if (arabic) {
+            u.voice = arabic;
+        }
+
         speechSynthesis.speak(u);
+    };
+
+    if (speechSynthesis.getVoices().length) {
+        speak();
+    } else {
+        speechSynthesis.onvoiceschanged = speak;
     }
 }
 
