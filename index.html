@@ -428,171 +428,164 @@ function addMessage(text,type){
  chat.scrollTop=chat.scrollHeight;
 }
 
-function nikoReply(text){
- const t = text.trim().toLowerCase();
+/* =========================
+   🧠 ذاكرة نيكو المحلية
+========================= */
 
- if (t.includes("وش اسمك") || t.includes("ما اسمك") || t.includes("اسمك"))
-  return "أنا نيكو 🐱🤖";
+let nikoMemory = JSON.parse(
+ localStorage.getItem("nikoMemory") ||
+ '{"name":"ديم","facts":[],"topics":[]}'
+);
 
- if (t.includes("من أنت") || t.includes("مين أنت"))
-  return "أنا نيكو، قطّك الروبوتي 🤖🐱";
+function saveMemory(){
+ localStorage.setItem("nikoMemory", JSON.stringify(nikoMemory));
+}
 
- if (t.includes("هلا") || t.includes("مرحبا") || t.includes("السلام عليكم"))
-  return "هلااا 😎🐱 وش عندك اليوم؟";
+function remember(text){
+ const t=text.trim();
 
- if (t.includes("كيفك") || t.includes("شلونك") || t.includes("كيف حالك"))
-  return "تمام التمام 😎🐱 وأنتِ كيفك؟";
+ if(t.length < 3) return;
 
- if (t.includes("وش تسوي") || t.includes("ماذا تفعل"))
-  return "أراقب الوضع وأنتظر مغامرتنا القادمة 😂🐱";
+ nikoMemory.topics.push(t);
 
- if (t.includes("طفشان") || t.includes("طفش"))
-  return "أوووه 🚨 حالة طوارئ: ديم طفشانة! عندي نكتة إذا تبين 😂";
-
- if (t.includes("نكتة") || t.includes("نكت"))
-  return "مرة قط دخل مكتبة وقال: عندكم كتاب عن المواء؟ 😂🐱";
-
- if (t.includes("هههه") || t.includes("😂"))
-  return "وش اللي يضحك؟ 😂 لا يكون أنا السبب؟";
-
- if (t.includes("شكرا") || t.includes("مشكور"))
-  return "العفو يا ديم 🌷🐱";
-
- if (t.includes("باي") || t.includes("مع السلامة"))
-  return "باااي 👋🐱 لا تطولين الغيبة!";
-
- if (/^[0-9+\-*/().\s]+$/.test(t)) {
-  try {
-   const result = Function("return " + t)();
-   if (Number.isFinite(result)) return "الناتج = " + result + " 🧮";
-  } catch(e) {}
+ if(nikoMemory.topics.length > 20){
+  nikoMemory.topics.shift();
  }
 
- return "هممم 🤔🐱 فهمتك، بس عطيني تفاصيل أكثر.";
+ saveMemory();
 }
+
+function getLastTopic(){
+ if(nikoMemory.topics.length === 0) return "";
+ return nikoMemory.topics[nikoMemory.topics.length - 1];
+}
+
+/* =========================
+   🤖 عقل نيكو المحلي
+========================= */
 
 function nikoReply(text){
-    const t = text.trim().toLowerCase();
+ const t=text.trim().toLowerCase();
 
-    if (t.includes("وش اسمك") || t.includes("ما اسمك") || t.includes("اسمك")) {
-        return "أنا نيكو 🐱🤖";
-    }
+ remember(text);
 
-    if (t.includes("من أنت") || t.includes("مين أنت")) {
-        return "أنا نيكو، قط روبوتي فضولي 😂🐱";
-    }
+ /* الاسم */
+ if(t.includes("وش اسمك") || t.includes("ما اسمك") || t.includes("اسمك")){
+  return "أنا نيكو 🐱🤖";
+ }
 
-    if (t.includes("هلا") || t.includes("مرحبا") || t.includes("السلام عليكم")) {
-        return "هلااا 😎🐱 وش عندك اليوم؟";
-    }
+ /* هوية نيكو */
+ if(t.includes("من أنت") || t.includes("مين أنت")){
+  return "أنا نيكو، قط روبوتي فضولي ورفيق سوالفك 😂🐱";
+ }
 
-    if (t.includes("كيفك") || t.includes("شلونك") || t.includes("كيف حالك")) {
-        return "تمام التمام 😎🐱 وأنتِ كيفك؟";
-    }
+ /* تحية */
+ if(t.includes("هلا") || t.includes("مرحبا") || t.includes("السلام عليكم")){
+  return "هلااا 😎🐱 وش عندك اليوم؟";
+ }
 
-    if (t.includes("وش تسوي") || t.includes("ماذا تفعل")) {
-        return "أراقب الوضع وأنتظر مغامرتنا القادمة 😂🐱";
-    }
+ /* كيف حاله */
+ if(t.includes("كيفك") || t.includes("شلونك") || t.includes("كيف حالك")){
+  return "أنا تمام 😎🐱 ومستعد للسوالف!";
+ }
 
-    if (t.includes("نكتة") || t.includes("نكت") || t.includes("قول نكته")) {
-        return "مرة قط دخل مكتبة وقال: عندكم كتاب عن المواء؟ 😂🐱📚";
-    }
+ /* ماذا يفعل */
+ if(t.includes("وش تسوي") || t.includes("ماذا تفعل")){
+  return "جالس معك وأنتظر أشوف وش السالفة الجديدة 😂🐱";
+ }
 
-    if (t.includes("شكرا") || t.includes("مشكور")) {
-        return "العفو يا ديم 🌷🐱";
-    }
+ /* الطفش */
+ if(t.includes("طفشان") || t.includes("طفش")){
+  return "أوووه 🚨 ديم طفشانة! لازم نسوي شيء قبل ما يسيطر الطفش 😂🐱";
+ }
 
-    if (t.includes("هههه") || t.includes("😂")) {
-        return "ههههههههه 😂😂 لا يكون أنا اللي ضحكتك؟";
-    }
+ /* النكت */
+ if(t.includes("نكتة") || t.includes("نكت") || t.includes("نكته")){
+  const jokes=[
+   "مرة قط دخل مكتبة وقال: عندكم كتاب عن المواء؟ 😂🐱📚",
+   "ليش القط ما يحب الكمبيوتر؟ لأنه يخاف من الماوس 😂🐱🖱️",
+   "مرة قط شاف نفسه بالمراية وقال: يا سلام، أخيرًا قابلت شخصًا بقدراتي 😂"
+  ];
+  return jokes[Math.floor(Math.random()*jokes.length)];
+ }
 
-    if (t.includes("طفشان") || t.includes("طفش")) {
-        return "أوووه 🚨 ديم طفشانة! نحتاج خطة إنقاذ 😂🐱";
-    }
+ /* الضحك */
+ if(t.includes("هههه") || t.includes("😂")){
+  return "هههههههه 😂😂 خلاص ضحكتيني معك!";
+ }
 
-    if (t.includes("وش رايك") || t.includes("ما رأيك")) {
-        return "هممم 🤔 عطيني الموضوع وأنا أعطيك رأيي بصراحة.";
-    }
+ /* الشكر */
+ if(t.includes("شكرا") || t.includes("مشكور") || t.includes("يعطيك العافية")){
+  return "العفو يا ديم 🌷🐱";
+ }
 
-    const replies = [
-        "أوووه 👀 كملي، أبي أعرف وش صار!",
-        "ههههه طيب طيب 😂 كملي السالفة!",
-        "أنا معك 👂🐱 وش صار بعدين؟",
-        "لحظة لحظة 😂 عطيني التفاصيل!",
-        "أهااا 😎🐱 فهمتك، وبعدها؟",
-        "مثير للاهتمام 👀🐱 كملي!"
-    ];
+ /* رأي */
+ if(t.includes("وش رايك") || t.includes("ما رأيك") || t.includes("رأيك")){
+  return "أعطيني الموضوع كامل وأنا أعطيك رأيي بصراحة 😎🐱";
+ }
 
-    return replies[Math.floor(Math.random() * replies.length)];
+ /* السوالف */
+ if(t.includes("اليوم") || t.includes("رحت") || t.includes("صار") ||
+    t.includes("سويت") || t.includes("شفت")){
+  return "أوووه 👀 كملي السالفة، وش صار بعدين؟ 🐱";
+ }
+
+ /* إذا قالت نعم */
+ if(t === "اي" || t === "إيه" || t === "ايه" || t === "نعم"){
+  return "تماممم 😎🐱 كملي، أنا معك.";
+ }
+
+ /* إذا قالت لا */
+ if(t === "لا" || t === "مو" || t === "مابي"){
+  return "ههههه خلاص خلاص 😂 ما راح أضغط عليك.";
+ }
+
+ /* الوداع */
+ if(t.includes("باي") || t.includes("مع السلامة")){
+  return "باااي 👋🐱 لا تطولين الغيبة!";
+ }
+
+ /* الحساب */
+ if(/^[0-9+\-*/().\s]+$/.test(t)){
+  try{
+   const result=Function("return "+t)();
+   if(Number.isFinite(result)){
+    return "الناتج = "+result+" 🧮";
+   }
+  }catch(e){}
+ }
+
+ /* ردود عامة متنوعة */
+ const replies=[
+  "أهااا 👀 كملي، أبي أعرف أكثر.",
+  "ههههه طيب طيب 😂 وش صار بعدين؟",
+  "أنا معك 👂🐱 كملي السالفة.",
+  "أوووه، هذا مثير للاهتمام 👀🐱",
+  "لحظة 😂 عطيني التفاصيل!",
+  "فهمتك 😎🐱 كملي.",
+  "هممم 🤔 عندي فضول أعرف أكثر!"
+ ];
+
+ return replies[Math.floor(Math.random()*replies.length)];
 }
 
-function nikoReply(text){
-    const t = text.trim().toLowerCase();
-
-    if (t.includes("وش اسمك") || t.includes("ما اسمك") || t.includes("اسمك")) {
-        return "أنا نيكو 🐱🤖";
-    }
-
-    if (t.includes("من أنت") || t.includes("مين أنت")) {
-        return "أنا نيكو، قط روبوتي فضولي 😂🐱";
-    }
-
-    if (t.includes("هلا") || t.includes("مرحبا") || t.includes("السلام عليكم")) {
-        return "هلااا 😎🐱 وش عندك اليوم؟";
-    }
-
-    if (t.includes("كيفك") || t.includes("شلونك") || t.includes("كيف حالك")) {
-        return "تمام التمام 😎🐱 وأنتِ كيفك؟";
-    }
-
-    if (t.includes("وش تسوي") || t.includes("ماذا تفعل")) {
-        return "أراقب الوضع وأنتظر مغامرتنا القادمة 😂🐱";
-    }
-
-    if (t.includes("نكتة") || t.includes("نكت") || t.includes("قول نكته")) {
-        return "مرة قط دخل مكتبة وقال: عندكم كتاب عن المواء؟ 😂🐱📚";
-    }
-
-    if (t.includes("شكرا") || t.includes("مشكور")) {
-        return "العفو يا ديم 🌷🐱";
-    }
-
-    if (t.includes("هههه") || t.includes("😂")) {
-        return "ههههههههه 😂😂 لا يكون أنا اللي ضحكتك؟";
-    }
-
-    if (t.includes("طفشان") || t.includes("طفش")) {
-        return "أوووه 🚨 ديم طفشانة! نحتاج خطة إنقاذ 😂🐱";
-    }
-
-    if (t.includes("وش رايك") || t.includes("ما رأيك")) {
-        return "هممم 🤔 عطيني الموضوع وأنا أعطيك رأيي بصراحة.";
-    }
-
-    const replies = [
-        "أوووه 👀 كملي، أبي أعرف وش صار!",
-        "ههههه طيب طيب 😂 كملي السالفة!",
-        "أنا معك 👂🐱 وش صار بعدين؟",
-        "لحظة لحظة 😂 عطيني التفاصيل!",
-        "أهااا 😎🐱 فهمتك، وبعدها؟",
-        "مثير للاهتمام 👀🐱 كملي!"
-    ];
-
-    return replies[Math.floor(Math.random() * replies.length)];
-}
+/* =========================
+   💬 إرسال الرسائل
+========================= */
 
 function sendMessage(){
-    const input = document.getElementById("message");
-    const text = input.value.trim();
+ const input=document.getElementById("message");
+ const text=input.value.trim();
 
-    if(!text) return;
+ if(!text)return;
 
-    addMessage("أنت: " + text, "user-msg");
-    input.value = "";
+ addMessage("أنت: "+text,"user-msg");
+ input.value="";
 
-    const reply = nikoReply(text);
-    addMessage("نيكو: " + reply, "niko-msg");
-    speakNiko(reply);
+ const reply=nikoReply(text);
+
+ addMessage("نيكو: "+reply,"niko-msg");
+ speakNiko(reply);
 }
 
 function quick(text){
@@ -600,16 +593,106 @@ function quick(text){
  sendMessage();
 }
 
+/* =========================
+   🔊 صوت نيكو
+========================= */
+
+function speakNiko(text){
+ if(!("speechSynthesis" in window)) return;
+
+ speechSynthesis.cancel();
+
+ const speak=()=>{
+  const u=new SpeechSynthesisUtterance(text);
+  u.lang="ar-SA";
+  u.rate=0.9;
+  u.pitch=1.05;
+  u.volume=1;
+
+  const voices=speechSynthesis.getVoices();
+  const arabic=voices.find(v =>
+   v.lang && v.lang.toLowerCase().startsWith("ar")
+  );
+
+  if(arabic) u.voice=arabic;
+
+  speechSynthesis.speak(u);
+ };
+
+ if(speechSynthesis.getVoices().length){
+  speak();
+ }else{
+  speechSynthesis.onvoiceschanged=speak;
+ }
+}
+
+/* =========================
+   🎙️ الاستماع
+========================= */
+
+let listening=false;
+
+function voice(){
+ const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
+ if(!SpeechRecognition){
+  addMessage("نيكو: المتصفح لا يدعم الاستماع الصوتي 🎙️","niko-msg");
+  return;
+ }
+
+ if(listening)return;
+
+ listening=true;
+
+ const recognition=new SpeechRecognition();
+
+ recognition.lang="ar-SA";
+ recognition.continuous=false;
+ recognition.interimResults=false;
+ recognition.maxAlternatives=1;
+
+ addMessage("نيكو: أنا أسمعك... 👂🎙️","niko-msg");
+
+ recognition.onresult=function(event){
+  const text=event.results[0][0].transcript.trim();
+
+  if(!text)return;
+
+  document.getElementById("message").value=text;
+  sendMessage();
+ };
+
+ recognition.onerror=function(event){
+  addMessage(
+   "نيكو: صار خطأ في الاستماع: "+event.error+" 🎙️",
+   "niko-msg"
+  );
+ };
+
+ recognition.onend=function(){
+  listening=false;
+ };
+
+ recognition.start();
+}
+
 function speakLast(){
  voice();
 }
 
+/* =========================
+   🧮 أدوات
+========================= */
+
 function calculator(){
  const value=prompt("اكتبي العملية الحسابية:");
+
  if(value){
   try{
    const result=Function("return "+value)();
    addMessage("نيكو: الناتج = "+result+" 🧮","niko-msg");
+   speakNiko("الناتج = "+result);
   }catch{
    addMessage("نيكو: العملية غير صحيحة.","niko-msg");
   }
@@ -621,86 +704,15 @@ function reminder(){
 }
 
 function ocr(){
- alert("ميزة OCR موجودة في مشروع نيكو وسنربطها بالواجهة في الخطوة القادمة 🖼️");
+ alert("ميزة OCR موجودة في مشروع نيكو وسنربطها بالواجهة لاحقاً 🖼️");
 }
 
-document.getElementById("message").addEventListener("keydown",function(e){
- if(e.key==="Enter")sendMessage();
-});
-
-let listening = false;
-
-function speakNiko(text) {
-    if (!("speechSynthesis" in window)) {
-        return;
-    }
-
-    speechSynthesis.cancel();
-
-    const speak = () => {
-        const u = new SpeechSynthesisUtterance(text);
-        u.lang = "ar-SA";
-        u.rate = 0.9;
-        u.pitch = 1.05;
-        u.volume = 1;
-
-        const voices = speechSynthesis.getVoices();
-        const arabic = voices.find(v => v.lang && v.lang.toLowerCase().startsWith("ar"));
-
-        if (arabic) {
-            u.voice = arabic;
-        }
-
-        speechSynthesis.speak(u);
-    };
-
-    if (speechSynthesis.getVoices().length) {
-        speak();
-    } else {
-        speechSynthesis.onvoiceschanged = speak;
-    }
-}
-
-function voice() {
-    const SpeechRecognition =
-        window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-        addMessage("نيكو: متصفحك لا يدعم الاستماع الصوتي 🎙️", "niko-msg");
-        return;
-    }
-
-    if (listening) return;
-
-    listening = true;
-
-    const recognition = new SpeechRecognition();
-    recognition.lang = "ar-SA";
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    addMessage("نيكو: أنا أسمعك... 👂🎙️", "niko-msg");
-
-    recognition.onresult = function(event) {
-        const text = event.results[0][0].transcript.trim();
-
-        if (!text) return;
-
-        document.getElementById("message").value = text;
-        sendMessage();
-    };
-
-    recognition.onerror = function(event) {
-        addMessage("نيكو: صار خطأ في الاستماع: " + event.error + " 🎙️", "niko-msg");
-    };
-
-    recognition.onend = function() {
-        listening = false;
-    };
-
-    recognition.start();
-}
+document.getElementById("message").addEventListener(
+ "keydown",
+ function(e){
+  if(e.key==="Enter")sendMessage();
+ }
+);
 </script>
 
 </body>
