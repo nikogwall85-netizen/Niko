@@ -467,6 +467,26 @@ function getLastTopic(){
 function nikoReply(text){
  const t=text.trim().toLowerCase();
 
+ /* قاموس ديم الخاص 💕 */
+ if(
+  t.includes("هايدي") ||
+  t.includes("هايديي") ||
+  t.includes("اوزمان") ||
+  t.includes("اوزماا")
+ ){
+  return "هاااايديييي 🔥😂 واضح الحماس وصل لأقصى مستوى!";
+ }
+
+ if(t.includes("افرِين سانا") || t.includes("افرين سانا")){
+  return "ههههه افرِين سانااا 😎🐱 برافووو عليكِ!";
+ }
+
+ if(t.includes("ما شاء الله سانا") || t.includes("ماشاءالله سانا")){
+  return "ما شاء الله عليكِ يا ديم 🌷✨";
+ }
+
+ if(t.includes("ما شاء الله باا") || t.includes("ماشاءالله باا")){
+  return "ما شاء الله عليكِ 😎✨";
  remember(text);
 
  /* الاسم */
