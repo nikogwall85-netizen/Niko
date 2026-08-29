@@ -526,6 +526,61 @@ function nikoReply(text){
     return replies[Math.floor(Math.random() * replies.length)];
 }
 
+function nikoReply(text){
+    const t = text.trim().toLowerCase();
+
+    if (t.includes("وش اسمك") || t.includes("ما اسمك") || t.includes("اسمك")) {
+        return "أنا نيكو 🐱🤖";
+    }
+
+    if (t.includes("من أنت") || t.includes("مين أنت")) {
+        return "أنا نيكو، قط روبوتي فضولي 😂🐱";
+    }
+
+    if (t.includes("هلا") || t.includes("مرحبا") || t.includes("السلام عليكم")) {
+        return "هلااا 😎🐱 وش عندك اليوم؟";
+    }
+
+    if (t.includes("كيفك") || t.includes("شلونك") || t.includes("كيف حالك")) {
+        return "تمام التمام 😎🐱 وأنتِ كيفك؟";
+    }
+
+    if (t.includes("وش تسوي") || t.includes("ماذا تفعل")) {
+        return "أراقب الوضع وأنتظر مغامرتنا القادمة 😂🐱";
+    }
+
+    if (t.includes("نكتة") || t.includes("نكت") || t.includes("قول نكته")) {
+        return "مرة قط دخل مكتبة وقال: عندكم كتاب عن المواء؟ 😂🐱📚";
+    }
+
+    if (t.includes("شكرا") || t.includes("مشكور")) {
+        return "العفو يا ديم 🌷🐱";
+    }
+
+    if (t.includes("هههه") || t.includes("😂")) {
+        return "ههههههههه 😂😂 لا يكون أنا اللي ضحكتك؟";
+    }
+
+    if (t.includes("طفشان") || t.includes("طفش")) {
+        return "أوووه 🚨 ديم طفشانة! نحتاج خطة إنقاذ 😂🐱";
+    }
+
+    if (t.includes("وش رايك") || t.includes("ما رأيك")) {
+        return "هممم 🤔 عطيني الموضوع وأنا أعطيك رأيي بصراحة.";
+    }
+
+    const replies = [
+        "أوووه 👀 كملي، أبي أعرف وش صار!",
+        "ههههه طيب طيب 😂 كملي السالفة!",
+        "أنا معك 👂🐱 وش صار بعدين؟",
+        "لحظة لحظة 😂 عطيني التفاصيل!",
+        "أهااا 😎🐱 فهمتك، وبعدها؟",
+        "مثير للاهتمام 👀🐱 كملي!"
+    ];
+
+    return replies[Math.floor(Math.random() * replies.length)];
+}
+
 function sendMessage(){
     const input = document.getElementById("message");
     const text = input.value.trim();
