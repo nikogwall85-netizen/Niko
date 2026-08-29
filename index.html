@@ -503,6 +503,63 @@ document.getElementById("message").addEventListener("keydown",function(e){
  if(e.key==="Enter")sendMessage();
 });
 
+let listening = false;
+
+function speakNiko(text) {
+    if ("speechSynthesis" in window) {
+        speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(text);
+        u.lang = "ar-SA";
+        u.rate = 0.95;
+        u.pitch = 1;
+        speechSynthesis.speak(u);
+    }
+}
+
+function voice() {
+    const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        addMessage("نيكو: متصفحك لا يدعم الاستماع الصوتي 🎙️", "niko-msg");
+        return;
+    }
+
+    if (listening) return;
+
+    listening = true;
+
+    const recognition = new SpeechRecognition();
+    recognition.lang = "ar-SA";
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    addMessage("نيكو: أنا أسمعك... 👂🎙️", "niko-msg");
+
+    recognition.onresult = function(event) {
+        const text = event.results[0][0].transcript.trim();
+
+        if (!text) return;
+
+        addMessage("أنت: " + text, "user-msg");
+
+        const reply = "أهلاً ديم! سمعتك تقولين: " + text + " 🐱✨";
+        addMessage("نيكو: " + reply, "niko-msg");
+
+        speakNiko(reply);
+    };
+
+    recognition.onerror = function(event) {
+        addMessage("نيكو: صار خطأ في الاستماع: " + event.error + " 🎙️", "niko-msg");
+    };
+
+    recognition.onend = function() {
+        listening = false;
+    };
+
+    recognition.start();
+}
 </script>
 
 </body>
