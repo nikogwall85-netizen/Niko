@@ -469,7 +469,7 @@ function voice(){
  };
 
  recognition.onerror = function(){
-  addMessage("نيكو: ما قدرت أسمعك. تأكدي من إذن الميكروفون 🎙️","niko-msg");
+  addMessage("نيكو: خطأ الاستماع: " + event.error + " 🎙️","niko-msg");
  };
 
  recognition.start();
