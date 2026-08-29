@@ -464,8 +464,58 @@ function getLastTopic(){
    🤖 عقل نيكو المحلي
 ========================= */
 
+function addMemoryFact(fact){
+ fact = fact.trim();
+
+ if(!fact) return;
+
+ if(!Array.isArray(nikoMemory.facts)){
+  nikoMemory.facts = [];
+ }
+
+ if(!nikoMemory.facts.includes(fact)){
+  nikoMemory.facts.push(fact);
+ }
+
+ if(nikoMemory.facts.length > 30){
+  nikoMemory.facts.shift();
+ }
+
+ saveMemory();
+}
+
+function memoryAnswer(){
+ if(!Array.isArray(nikoMemory.facts) || nikoMemory.facts.length === 0){
+  return "لسه ما عندي معلومات محفوظة 🧠🐱 قولي لي: تذكر أني ...";
+ }
+
+ return "أتذكر عنك:\n• " +
+  nikoMemory.facts.slice(-10).join("\n• ");
+}
+
 function nikoReply(text){
  const t=text.trim().toLowerCase();
+
+ /* 🧠 ذاكرة نيكو */
+ if(
+  t.includes("وش تتذكر") ||
+  t.includes("ماذا تتذكر") ||
+  t.includes("وش تذكر عني") ||
+  t.includes("ايش تتذكر عني")
+ ){
+  return memoryAnswer();
+ }
+
+ if(t.startsWith("تذكر أن") || t.startsWith("تذكر ان")){
+  let fact = text.trim();
+
+  fact = fact.replace(/^تذكر\s+(أن|ان)\s*/i, "").trim();
+
+  if(fact){
+   addMemoryFact(fact);
+   return "تممم 🧠🐱 حفظتها عندي، وما راح أنساها!";
+  }
+ }
 
  /* قاموس ديم الخاص 💕 */
  const normalized = t
@@ -504,8 +554,6 @@ function nikoReply(text){
  ){
   return "ما شاء الله باااا 😎✨ ما شاء الله عليكِ!";
  }
- remember(text);
-
  /* الاسم */
  if(t.includes("وش اسمك") || t.includes("ما اسمك") || t.includes("اسمك")){
   return "أنا نيكو 🐱🤖";
