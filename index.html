@@ -448,12 +448,31 @@ function quick(text){
 }
 
 function voice(){
- if("speechSynthesis" in window){
-  const u=new SpeechSynthesisUtterance("مرحباً ديم، أنا نيكو");
-  u.lang="ar-SA";
-  speechSynthesis.speak(u);
+ const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+ if(!SpeechRecognition){
+  addMessage("نيكو: المتصفح لا يدعم الاستماع الصوتي 🎙️","niko-msg");
+  return;
  }
- addMessage("نيكو: تم تشغيل الصوت 🎙️","niko-msg");
+
+ const recognition = new SpeechRecognition();
+ recognition.lang = "ar-SA";
+ recognition.interimResults = false;
+ recognition.maxAlternatives = 1;
+
+ addMessage("نيكو: أنا أسمعك... 🎙️👂","niko-msg");
+
+ recognition.onresult = function(event){
+  const text = event.results[0][0].transcript;
+  document.getElementById("message").value = text;
+  addMessage("أنت: " + text,"user-msg");
+ };
+
+ recognition.onerror = function(){
+  addMessage("نيكو: ما قدرت أسمعك. تأكدي من إذن الميكروفون 🎙️","niko-msg");
+ };
+
+ recognition.start();
 }
 
 function speakLast(){
