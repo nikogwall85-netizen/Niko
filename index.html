@@ -602,8 +602,17 @@ function speakNiko(text){
 
  speechSynthesis.cancel();
 
+ // نخلي الإيموجيات تظهر على الشاشة لكن ما نخلي الصوت ينطق وصفها 🤖🐱
+ const cleanText = text
+  .replace(/[\u{1F300}-\u{1FAFF}]/gu, "")
+  .replace(/[\u{2600}-\u{27BF}]/gu, "")
+  .replace(/\s+/g, " ")
+  .trim();
+
+ if(!cleanText) return;
+
  const speak=()=>{
-  const u=new SpeechSynthesisUtterance(text);
+  const u=new SpeechSynthesisUtterance(cleanText);
   u.lang="ar-SA";
   u.rate=0.9;
   u.pitch=1.05;
