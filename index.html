@@ -428,17 +428,60 @@ function addMessage(text,type){
  chat.scrollTop=chat.scrollHeight;
 }
 
+function nikoReply(text){
+ const t = text.trim().toLowerCase();
+
+ if (t.includes("وش اسمك") || t.includes("ما اسمك") || t.includes("اسمك"))
+  return "أنا نيكو 🐱🤖";
+
+ if (t.includes("من أنت") || t.includes("مين أنت"))
+  return "أنا نيكو، قطّك الروبوتي 🤖🐱";
+
+ if (t.includes("هلا") || t.includes("مرحبا") || t.includes("السلام عليكم"))
+  return "هلااا 😎🐱 وش عندك اليوم؟";
+
+ if (t.includes("كيفك") || t.includes("شلونك") || t.includes("كيف حالك"))
+  return "تمام التمام 😎🐱 وأنتِ كيفك؟";
+
+ if (t.includes("وش تسوي") || t.includes("ماذا تفعل"))
+  return "أراقب الوضع وأنتظر مغامرتنا القادمة 😂🐱";
+
+ if (t.includes("طفشان") || t.includes("طفش"))
+  return "أوووه 🚨 حالة طوارئ: ديم طفشانة! عندي نكتة إذا تبين 😂";
+
+ if (t.includes("نكتة") || t.includes("نكت"))
+  return "مرة قط دخل مكتبة وقال: عندكم كتاب عن المواء؟ 😂🐱";
+
+ if (t.includes("هههه") || t.includes("😂"))
+  return "وش اللي يضحك؟ 😂 لا يكون أنا السبب؟";
+
+ if (t.includes("شكرا") || t.includes("مشكور"))
+  return "العفو يا ديم 🌷🐱";
+
+ if (t.includes("باي") || t.includes("مع السلامة"))
+  return "باااي 👋🐱 لا تطولين الغيبة!";
+
+ if (/^[0-9+\-*/().\s]+$/.test(t)) {
+  try {
+   const result = Function("return " + t)();
+   if (Number.isFinite(result)) return "الناتج = " + result + " 🧮";
+  } catch(e) {}
+ }
+
+ return "هممم 🤔🐱 فهمتك، بس عطيني تفاصيل أكثر.";
+}
+
 function sendMessage(){
- const input=document.getElementById("message");
- const text=input.value.trim();
+ const input = document.getElementById("message");
+ const text = input.value.trim();
 
- if(!text)return;
+ if(!text) return;
 
- addMessage("أنت: "+text,"user-msg");
- input.value="";
+ addMessage("أنت: " + text, "user-msg");
+ input.value = "";
 
- const reply="أهلاً ديم! وصلتني رسالتك: "+text+" 🐱✨";
- addMessage("نيكو: "+reply,"niko-msg");
+ const reply = nikoReply(text);
+ addMessage("نيكو: " + reply, "niko-msg");
  speakNiko(reply);
 }
 
