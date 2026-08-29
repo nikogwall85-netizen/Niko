@@ -437,42 +437,14 @@ function sendMessage(){
  addMessage("أنت: "+text,"user-msg");
  input.value="";
 
- setTimeout(()=>{
-  addMessage("نيكو: وصلتني رسالتك 🐱✨","niko-msg");
- },400);
+ const reply="أهلاً ديم! وصلتني رسالتك: "+text+" 🐱✨";
+ addMessage("نيكو: "+reply,"niko-msg");
+ speakNiko(reply);
 }
 
 function quick(text){
  document.getElementById("message").value=text;
  sendMessage();
-}
-
-function voice(){
- const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
- if(!SpeechRecognition){
-  addMessage("نيكو: المتصفح لا يدعم الاستماع الصوتي 🎙️","niko-msg");
-  return;
- }
-
- const recognition = new SpeechRecognition();
- recognition.lang = "ar-SA";
- recognition.interimResults = false;
- recognition.maxAlternatives = 1;
-
- addMessage("نيكو: أنا أسمعك... 🎙️👂","niko-msg");
-
- recognition.onresult = function(event){
-  const text = event.results[0][0].transcript;
-  document.getElementById("message").value = text;
-  addMessage("أنت: " + text,"user-msg");
- };
-
- recognition.onerror = function(){
-  addMessage("نيكو: خطأ الاستماع: " + event.error + " 🎙️","niko-msg");
- };
-
- recognition.start();
 }
 
 function speakLast(){
@@ -542,12 +514,8 @@ function voice() {
 
         if (!text) return;
 
-        addMessage("أنت: " + text, "user-msg");
-
-        const reply = "أهلاً ديم! سمعتك تقولين: " + text + " 🐱✨";
-        addMessage("نيكو: " + reply, "niko-msg");
-
-        speakNiko(reply);
+        document.getElementById("message").value = text;
+        sendMessage();
     };
 
     recognition.onerror = function(event) {
