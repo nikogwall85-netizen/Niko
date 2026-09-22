@@ -517,7 +517,54 @@ function nikoReply(text){
   }
  }
 
- /* قاموس ديم الخاص 💕 */
+
+function removeMemoryFact(fact){
+ fact = fact.trim();
+
+ if(!fact || !Array.isArray(nikoMemory.facts)){
+  return false;
+ }
+
+ const before = nikoMemory.facts.length;
+
+ nikoMemory.facts = nikoMemory.facts.filter(item =>
+  !item.includes(fact) && !fact.includes(item)
+ );
+
+ if(nikoMemory.facts.length !== before){
+  saveMemory();
+  return true;
+ }
+
+ return false;
+}
+
+
+ if(
+  t.startsWith("انسَ ") ||
+  t.startsWith("انسى ") ||
+  t.startsWith("احذف من ذاكرتك ") ||
+  t.startsWith("احذف ")
+ ){
+  let fact = text.trim()
+   .replace(/^انسَ\s*/i, "")
+   .replace(/^انسى\s*/i, "")
+   .replace(/^احذف من ذاكرتك\s*/i, "")
+   .replace(/^احذف\s*/i, "")
+   .trim();
+
+  if(!fact){
+   return "وش المعلومة اللي تبغين أنساها؟ 🧠🐱";
+  }
+
+  if(removeMemoryFact(fact)){
+   return "تم، حذفتها من ذاكرتي 🗑️🐱";
+  }
+
+  return "ما لقيت هالمعلومة في ذاكرتي 🐱";
+ }
+
+/* قاموس ديم الخاص 💕 */
  const normalized = t
   .replace(/[ًٌٍَُِّْـ]/g, "")
   .replace(/ي|ى/g, "ي")
@@ -657,20 +704,59 @@ function nikoReply(text){
 /* =========================
    💬 إرسال الرسائل
 ========================= */
+let history = JSON.parse(localStorage.getItem("nikoGeminiHistory") || "[]");
 
-function sendMessage(){
- const input=document.getElementById("message");
- const text=input.value.trim();
+async function sendMessage(){
+    const input = document.getElementById("message");
+    const text = input.value.trim();
+    console.log("NIKO SEND:", text);
 
- if(!text)return;
+// 🧠 حفظ تلقائي للمعلومات الشخصية
+const autoMemoryPatterns = [
+    /^أحب\s+/,
+    /^احب\s+/,
+    /^أنا أحب\s+/,
+    /^انا احب\s+/,
+    /^لوني المفضل\s+/,
+    /^عمري\s+/,
+    /^اسمي\s+/
+];
 
- addMessage("أنت: "+text,"user-msg");
- input.value="";
+if (autoMemoryPatterns.some(pattern => pattern.test(text.trim()))) {
+    addMemoryFact(text.trim());
+}
 
- const reply=nikoReply(text);
+    if(!text) return;
 
- addMessage("نيكو: "+reply,"niko-msg");
- speakNiko(reply);
+    addMessage("أنت: " + text, "user-msg");
+    input.value = "";
+
+    try {
+        const response = await fetch("/chat", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                message: text, history: history.slice(-12), memory: nikoMemory.facts.slice(-20)
+            })
+        });
+
+        const data = await response.json();
+
+        if(data.error){
+            addMessage("نيكو: " + data.error + " 🐱", "niko-msg");
+            return;
+        }
+
+        addMessage("نيكو: " + data.reply, "niko-msg");
+        speakNiko(data.reply);
+        history.push({role:"user", text:text}); history.push({role:"model", text:data.reply}); localStorage.setItem("nikoGeminiHistory", JSON.stringify(history.slice(-12)));
+
+    } catch(error) {
+        console.error(error);
+        addMessage("نيكو: ما قدرت أتصل بذكائي الآن 😿", "niko-msg");
+    }
 }
 
 function quick(text){
@@ -798,7 +884,20 @@ function reminder(){
 }
 
 function ocr(){
- alert("ميزة OCR موجودة في مشروع نيكو وسنربطها بالواجهة لاحقاً 🖼️");
+ const input = document.getElementById("ocrImage");
+
+ if(!input){
+  alert("ميزة OCR غير جاهزة 😿");
+  return;
+ }
+
+ input.click();
+
+ input.onchange = () => {
+  if(input.files.length && typeof readImage === "function"){
+   readImage();
+  }
+ };
 }
 
 document.getElementById("message").addEventListener(
@@ -807,6 +906,175 @@ document.getElementById("message").addEventListener(
   if(e.key==="Enter")sendMessage();
  }
 );
+</script>
+
+
+<button onclick="showMemoryPage()">🧠 ذاكرتي</button>
+<div id="memoryPage" style="display:none;padding:15px;">
+<h3>🧠 ذاكرتي</h3>
+<div id="memoryList"></div>
+<button onclick="document.getElementById('memoryPage').style.display='none'">إغلاق</button>
+</div>
+<script>
+function showMemoryPage(){
+ const page=document.getElementById("memoryPage");
+ const list=document.getElementById("memoryList");
+ page.style.display="block";
+ list.innerHTML="";
+ (nikoMemory.facts||[]).forEach((fact,i)=>{
+  list.innerHTML+=`<p>${fact} <button onclick="nikoMemory.facts.splice(${i},1);saveMemory();showMemoryPage()">🗑️</button></p>`;
+ });
+}
+</script>
+
+
+<style>
+#nikoGames{
+  margin:12px 0;
+  padding:15px;
+  border:1px solid #6b2145;
+  border-radius:16px;
+  background:#160b12;
+  color:white;
+  text-align:center;
+}
+#nikoGames button{
+  margin:5px;
+  padding:10px 14px;
+  border:0;
+  border-radius:12px;
+  background:#7b234f;
+  color:white;
+  font-size:14px;
+}
+</style>
+
+<div id="nikoGames">
+  <h3>🎮 ألعاب نيكو 🐱</h3>
+  <p id="gameText">اختاري لعبة ونبدأ! ✨</p>
+  <button onclick="startGuess()">🎯 تخمين</button>
+  <button onclick="startRiddle()">🧩 لغز</button>
+  <button onclick="startChoice()">💜 هذا أو ذاك</button>
+  <div id="gameButtons"></div>
+</div>
+
+<script>
+const gameText = document.getElementById("gameText");
+const gameButtons = document.getElementById("gameButtons");
+
+function clearGame(){
+  gameButtons.innerHTML = "";
+}
+
+function addGameButton(text, action){
+  const b = document.createElement("button");
+  b.textContent = text;
+  b.onclick = action;
+  gameButtons.appendChild(b);
+}
+
+function startGuess(){
+  clearGame();
+  const number = Math.floor(Math.random()*5)+1;
+  gameText.textContent = "🎯 خمني رقمًا من 1 إلى 5!";
+  for(let i=1;i<=5;i++){
+    const n=i;
+    addGameButton(String(i),()=>{
+      gameText.textContent = n===number
+        ? "واااو! صح عليكِ يا ديم! 🔥🐱"
+        : "ههههه مو هو! الرقم كان "+number+" 😹";
+      clearGame();
+      addGameButton("🔄 مرة ثانية",startGuess);
+    });
+  }
+}
+
+function startRiddle(){
+  clearGame();
+  gameText.textContent = "🧩 شيء له أسنان ولا يعض، وش هو؟";
+  addGameButton("المشط",()=>{
+    gameText.textContent="صححح! أفرين سانا يا ديم! 🥳🐱";
+    clearGame();
+    addGameButton("🔄 لغز ثاني",startRiddle);
+  });
+  addGameButton("الكتاب",()=>{
+    gameText.textContent="مو هالمرة 😂 الإجابة: المشط!";
+    clearGame();
+    addGameButton("🔄 مرة ثانية",startRiddle);
+  });
+}
+
+function startChoice(){
+  clearGame();
+  gameText.textContent="💜 تختارين أي واحد؟";
+  addGameButton("🍕 بيتزا",()=>{
+    gameText.textContent="اختيار لذيذ! 🍕🐱";
+    clearGame();
+    addGameButton("🔄 مرة ثانية",startChoice);
+  });
+  addGameButton("🍔 برجر",()=>{
+    gameText.textContent="يا سلام على البرجر! 🍔🐱";
+    clearGame();
+    addGameButton("🔄 مرة ثانية",startChoice);
+  });
+}
+</script>
+
+
+
+
+<div id="nikoSearch" style="margin:12px 0;padding:15px;border-radius:16px;background:#160b12;text-align:center;">
+<h3>🌐 بحث نيكو 🐱</h3>
+<input id="searchInput" placeholder="وش تبغين تبحثين عنه؟" style="padding:10px;border-radius:10px;width:80%;">
+<button onclick="searchWeb()" style="padding:10px;margin:8px;border-radius:10px;background:#7b234f;color:white;border:0;">🔍 ابحث</button>
+</div>
+<script>
+function searchWeb(){
+ const q=document.getElementById("searchInput").value.trim();
+ if(!q)return;
+ window.open("https://www.google.com/search?q="+encodeURIComponent(q),"_blank");
+}
+</script>
+
+
+<div id="nikoOCR" style="margin:12px 0;padding:15px;border-radius:16px;background:#160b12;text-align:center;color:white;">
+<h3>📸 نيكو يقرأ الصور 🐱</h3>
+<input type="file" id="ocrImage" accept="image/*">
+<button onclick="readImage()" style="padding:10px;margin:8px;border-radius:10px;background:#7b234f;color:white;border:0;">🔍 اقرأ الصورة</button>
+<p id="ocrStatus"></p>
+<textarea id="ocrResult" rows="5" style="width:90%;border-radius:10px;" placeholder="النص المستخرج يظهر هنا"></textarea>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+<script>
+async function readImage(){
+ const file=document.getElementById("ocrImage").files[0];
+ const status=document.getElementById("ocrStatus");
+ const result=document.getElementById("ocrResult");
+
+ if(!file){
+  status.textContent="اختاري صورة أولًا 🐱";
+  return;
+ }
+
+ status.textContent="جاري قراءة الصورة... ⏳";
+ result.value="";
+
+ try{
+  const output=await Tesseract.recognize(file,"ara+eng",{
+   logger: info=>{
+    if(info.status==="recognizing text"){
+     status.textContent="جاري القراءة: "+Math.round(info.progress*100)+"%";
+    }
+   }
+  });
+
+  result.value=output.data.text;
+  status.textContent="تمت القراءة! 🥳🐱";
+ }catch(error){
+  status.textContent="ما قدرت أقرأ الصورة 😿";
+  console.error(error);
+ }
+}
 </script>
 
 </body>
