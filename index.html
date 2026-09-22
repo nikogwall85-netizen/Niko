@@ -1077,5 +1077,257 @@ async function readImage(){
 }
 </script>
 
+
+<!-- NIKO_CALL_MODE_V1 -->
+<style>
+#nikoCallPanel{
+ position:fixed;
+ bottom:18px;
+ left:50%;
+ transform:translateX(-50%);
+ z-index:9999;
+ display:flex;
+ align-items:center;
+ gap:8px;
+ padding:10px;
+ border:1px solid #74243d;
+ border-radius:22px;
+ background:#10070b;
+ box-shadow:0 4px 20px #0008;
+ direction:rtl;
+}
+
+#nikoCallPanel button{
+ border:0;
+ border-radius:16px;
+ padding:11px 14px;
+ font-size:14px;
+ font-weight:bold;
+ cursor:pointer;
+ color:white;
+}
+
+#nikoCallStart{
+ background:#7d2948;
+}
+
+#nikoCallStop{
+ background:#42202c;
+ display:none;
+}
+
+#nikoCallStatus{
+ color:#f3c5d5;
+ font-size:12px;
+ max-width:125px;
+ text-align:center;
+}
+</style>
+
+<div id="nikoCallPanel">
+ <button id="nikoCallStart">📞 مكالمة نيكو</button>
+ <button id="nikoCallStop">⛔ إنهاء</button>
+ <span id="nikoCallStatus">جاهز 🐱</span>
+</div>
+
+<script>
+(function(){
+
+ let nikoCallActive = false;
+ let nikoCallBusy = false;
+ let nikoCallRecognition = null;
+ let nikoCallRestartTimer = null;
+
+ const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
+
+ const startButton = document.getElementById("nikoCallStart");
+ const stopButton = document.getElementById("nikoCallStop");
+ const status = document.getElementById("nikoCallStatus");
+
+ function setCallStatus(text){
+  status.textContent = text;
+ }
+
+ function showCallButtons(active){
+  startButton.style.display = active ? "none" : "block";
+  stopButton.style.display = active ? "block" : "none";
+ }
+
+ function stopNikoCall(){
+  nikoCallActive = false;
+  nikoCallBusy = false;
+
+  if(nikoCallRestartTimer){
+   clearTimeout(nikoCallRestartTimer);
+   nikoCallRestartTimer = null;
+  }
+
+  if(nikoCallRecognition){
+   try{
+    nikoCallRecognition.onend = null;
+    nikoCallRecognition.stop();
+   }catch(error){}
+   nikoCallRecognition = null;
+  }
+
+  if("speechSynthesis" in window){
+   speechSynthesis.cancel();
+  }
+
+  showCallButtons(false);
+  setCallStatus("انتهت المكالمة 👋");
+ }
+
+ function waitForNikoToFinish(){
+  if(!nikoCallActive || !nikoCallBusy)return;
+
+  if("speechSynthesis" in window && speechSynthesis.speaking){
+   nikoCallRestartTimer = setTimeout(waitForNikoToFinish, 350);
+   return;
+  }
+
+  nikoCallBusy = false;
+
+  if(nikoCallActive){
+   nikoCallRestartTimer = setTimeout(startCallListening, 500);
+  }
+ }
+
+ function startCallListening(){
+  if(!nikoCallActive || nikoCallBusy || !SpeechRecognition)return;
+
+  try{
+   const recognition = new SpeechRecognition();
+
+   nikoCallRecognition = recognition;
+   recognition.lang = "ar-SA";
+   recognition.continuous = false;
+   recognition.interimResults = false;
+   recognition.maxAlternatives = 1;
+
+   setCallStatus("أسمعك الآن 👂");
+
+   recognition.onresult = function(event){
+    if(!nikoCallActive)return;
+
+    const text =
+     event.results[0][0].transcript.trim();
+
+    if(!text){
+     nikoCallBusy = false;
+     startCallListening();
+     return;
+    }
+
+    nikoCallBusy = true;
+    setCallStatus("نيكو يفكر... 🧠");
+
+    const input = document.getElementById("message");
+
+    if(!input){
+     setCallStatus("لم أجد خانة الرسائل 😿");
+     nikoCallBusy = false;
+     return;
+    }
+
+    input.value = text;
+
+    try{
+     const result = sendMessage();
+
+     if(result && typeof result.then === "function"){
+      result
+       .then(function(){
+        waitForNikoToFinish();
+       })
+       .catch(function(){
+        nikoCallBusy = false;
+        if(nikoCallActive)startCallListening();
+       });
+     }else{
+      waitForNikoToFinish();
+     }
+    }catch(error){
+     console.error("NIKO CALL SEND ERROR:", error);
+     nikoCallBusy = false;
+
+     if(nikoCallActive){
+      startCallListening();
+     }
+    }
+   };
+
+   recognition.onerror = function(event){
+    console.log("NIKO CALL VOICE ERROR:", event.error);
+
+    if(!nikoCallActive)return;
+
+    if(event.error === "not-allowed" ||
+       event.error === "service-not-allowed"){
+
+     setCallStatus("اسمحي باستخدام الميكروفون 🎙️");
+     stopNikoCall();
+     return;
+    }
+
+    if(event.error === "aborted")return;
+
+    setCallStatus("أحاول الاستماع مرة أخرى...");
+   };
+
+   recognition.onend = function(){
+    nikoCallRecognition = null;
+
+    if(!nikoCallActive || nikoCallBusy)return;
+
+    nikoCallRestartTimer = setTimeout(
+     startCallListening,
+     400
+    );
+   };
+
+   recognition.start();
+
+  }catch(error){
+   console.error("NIKO CALL START ERROR:", error);
+
+   if(nikoCallActive){
+    nikoCallRestartTimer = setTimeout(
+     startCallListening,
+     1000
+    );
+   }
+  }
+ }
+
+ startButton.addEventListener("click", function(){
+
+  if(!SpeechRecognition){
+   alert("المتصفح لا يدعم المكالمات الصوتية. جربي Chrome.");
+   return;
+  }
+
+  nikoCallActive = true;
+  nikoCallBusy = false;
+
+  showCallButtons(true);
+  setCallStatus("جاري تشغيل المكالمة... 🎙️");
+
+  startCallListening();
+ });
+
+ stopButton.addEventListener("click", function(){
+  stopNikoCall();
+ });
+
+ window.addEventListener("beforeunload", function(){
+  stopNikoCall();
+ });
+
+})();
+</script>
+<!-- END NIKO_CALL_MODE_V1 -->
+
 </body>
 </html>
