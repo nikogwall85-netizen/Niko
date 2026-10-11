@@ -1329,5 +1329,355 @@ async function readImage(){
 </script>
 <!-- END NIKO_CALL_MODE_V1 -->
 
+
+<script id="NIKO_APP_CONTROL_V3">
+(function () {
+
+    const apps = {
+
+        youtube: {
+            name: "يوتيوب",
+            link: "intent://www.youtube.com/#Intent;scheme=https;package=com.google.android.youtube;end"
+        },
+
+        chrome: {
+            name: "كروم",
+            link: "googlechrome://navigate?url=https://www.google.com"
+        },
+
+        telegram: {
+            name: "تيليجرام",
+            link: "tg://resolve"
+        },
+
+        whatsapp: {
+            name: "واتساب",
+            link: "whatsapp://send"
+        },
+
+        chatgpt: {
+            name: "ChatGPT",
+            link: "intent://#Intent;scheme=https;package=com.openai.chatgpt;end"
+        },
+
+        roblox: {
+            name: "روبلوكس",
+            link: "roblox://"
+        },
+
+        playstore: {
+            name: "متجر Play",
+            link: "market://details?id=com.android.vending"
+        },
+
+        settings: {
+            name: "الإعدادات",
+            link: "intent:#Intent;action=android.settings.SETTINGS;end"
+        },
+
+        camera: {
+            name: "الكاميرا",
+            link: "intent:#Intent;action=android.media.action.IMAGE_CAPTURE;end"
+        }
+
+    };
+
+    const aliases = {
+
+        "يوتيوب": "youtube",
+        "youtube": "youtube",
+
+        "كروم": "chrome",
+        "chrome": "chrome",
+        "قوقل": "chrome",
+        "جوجل": "chrome",
+
+        "تيليجرام": "telegram",
+        "تلجرام": "telegram",
+        "تليجرام": "telegram",
+        "telegram": "telegram",
+
+        "واتساب": "whatsapp",
+        "واتس": "whatsapp",
+        "whatsapp": "whatsapp",
+
+        "شات جي بي تي": "chatgpt",
+        "شات جيبيتي": "chatgpt",
+        "شات جي بيتي": "chatgpt",
+        "chatgpt": "chatgpt",
+
+        "روبلوكس": "roblox",
+        "roblox": "roblox",
+
+        "المتجر": "playstore",
+        "متجر": "playstore",
+        "قوقل بلاي": "playstore",
+        "جوجل بلاي": "playstore",
+        "بلاي ستور": "playstore",
+        "play store": "playstore",
+
+        "الإعدادات": "settings",
+        "الاعدادات": "settings",
+        "اعدادات": "settings",
+        "settings": "settings",
+
+        "الكاميرا": "camera",
+        "كاميرا": "camera",
+        "camera": "camera"
+
+    };
+
+    let pendingApp = null;
+
+    function detectApp(text) {
+
+        const t = text
+            .trim()
+            .toLowerCase();
+
+        const wantsOpen =
+            t.includes("افتح") ||
+            t.includes("فتح") ||
+            t.includes("شغل") ||
+            t.includes("شغّل") ||
+            t.includes("ودني") ||
+            t.includes("روح") ||
+            t.includes("خلني");
+
+        if (!wantsOpen) {
+            return null;
+        }
+
+        for (const alias in aliases) {
+
+            if (t.includes(alias)) {
+                return aliases[alias];
+            }
+
+        }
+
+        return null;
+    }
+
+    function isYes(text) {
+
+        const t = text.trim().toLowerCase();
+
+        return [
+            "ايه",
+            "إيه",
+            "ايوه",
+            "أيوه",
+            "نعم",
+            "اي",
+            "إي",
+            "تمام",
+            "افتح",
+            "يلا",
+            "اوكي",
+            "أوكي",
+            "ok",
+            "yes"
+        ].includes(t);
+    }
+
+    function isNo(text) {
+
+        const t = text.trim().toLowerCase();
+
+        return [
+            "لا",
+            "لأ",
+            "الغيه",
+            "الغِ",
+            "إلغاء",
+            "خلاص لا",
+            "no"
+        ].includes(t);
+    }
+
+    function showOpenButton(appKey) {
+
+        const old = document.getElementById("nikoOpenAppButton");
+
+        if (old) {
+            old.remove();
+        }
+
+        const app = apps[appKey];
+
+        if (!app) {
+            return;
+        }
+
+        const box = document.createElement("div");
+
+        box.id = "nikoOpenAppButton";
+
+        box.style.cssText =
+            "margin:10px 25px;" +
+            "padding:15px;" +
+            "border:1px solid #ff5fa2;" +
+            "border-radius:20px;" +
+            "background:#160b12;" +
+            "text-align:center;";
+
+        const button = document.createElement("button");
+
+        button.textContent =
+            "📱 فتح " + app.name;
+
+        button.style.cssText =
+            "background:#ff4f9e;" +
+            "color:white;" +
+            "font-weight:bold;" +
+            "font-size:17px;" +
+            "padding:14px 25px;" +
+            "border-radius:18px;" +
+            "border:1px solid #ff8fc1;" +
+            "cursor:pointer;";
+
+        button.onclick = function () {
+
+            button.disabled = true;
+
+            addMessage(
+                "نيكو: جاري فتح " + app.name + " 📱🐱",
+                "niko-msg"
+            );
+
+            window.location.href = app.link;
+
+            setTimeout(function () {
+                button.disabled = false;
+            }, 3000);
+        };
+
+        box.appendChild(button);
+
+        const chat = document.getElementById("chat");
+
+        if (chat) {
+            chat.parentNode.insertBefore(
+                box,
+                chat.nextSibling
+            );
+        }
+    }
+
+    function askConfirmation(appKey) {
+
+        pendingApp = appKey;
+
+        const msg =
+            "نيكو: تبغين أفتح " +
+            apps[appKey].name +
+            " لك؟ 📱🐱";
+
+        addMessage(msg, "niko-msg");
+
+        if (typeof speak === "function") {
+            setTimeout(() => speak(msg), 100);
+        }
+    }
+
+    const oldSendMessage = window.sendMessage;
+
+    window.sendMessage = async function () {
+
+        const input =
+            document.getElementById("message");
+
+        const text =
+            input.value.trim();
+
+        if (!text) {
+            return;
+        }
+
+        if (pendingApp) {
+
+            addMessage(
+                "أنت: " + text,
+                "user-msg"
+            );
+
+            input.value = "";
+
+            if (isYes(text)) {
+
+                const appKey = pendingApp;
+
+                pendingApp = null;
+
+                const msg =
+                    "نيكو: تمام! اضغطي زر الفتح 📱🐱";
+
+                addMessage(msg, "niko-msg");
+
+                if (typeof speak === "function") {
+                    setTimeout(() => speak(msg), 100);
+                }
+
+                showOpenButton(appKey);
+
+                return;
+            }
+
+            if (isNo(text)) {
+
+                pendingApp = null;
+
+                const msg =
+                    "نيكو: تمام، ما راح أفتح التطبيق 👍🐱";
+
+                addMessage(msg, "niko-msg");
+
+                if (typeof speak === "function") {
+                    setTimeout(() => speak(msg), 100);
+                }
+
+                return;
+            }
+
+            const msg =
+                "نيكو: قولي «إيه» أو «لا» 😺";
+
+            addMessage(msg, "niko-msg");
+
+            if (typeof speak === "function") {
+                setTimeout(() => speak(msg), 100);
+            }
+
+            return;
+        }
+
+        const appKey = detectApp(text);
+
+        if (appKey) {
+
+            addMessage(
+                "أنت: " + text,
+                "user-msg"
+            );
+
+            input.value = "";
+
+            askConfirmation(appKey);
+
+            return;
+        }
+
+        return oldSendMessage();
+
+    };
+
+})();
+</script>
+
+
+
+
+  <script src="niko_features.js"></script>
 </body>
 </html>
